@@ -1,0 +1,143 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9fb;
+  margin: 0;
+}
+.layout-wrapper {
+  display: flex;
+  height: 100vh;
+}
+.sidebar {
+  width: 240px;
+  background: #2b2b5f;
+  color: white;
+  padding: 20px 0;
+  position: fixed;
+  left: -240px;
+  top: 0;
+  bottom: 0;
+  transition: left 0.3s cubic-bezier(.77,0,.18,1);
+  z-index: 1000;
+}
+.sidebar.open { left: 0; }
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.nav-list li {
+  margin: 20px 0 20px 32px;
+}
+.nav-list a {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+}
+.nav-list img {
+  width: 22px;
+  height: 22px;
+}
+.main {
+  flex: 1;
+  margin-left: 0;
+  padding: 0 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 0 0 0;
+}
+#menu-toggle {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #2b2b5f;
+  cursor: pointer;
+  z-index: 1010;
+}
+.page-title {
+  font-size: 23px;
+  font-weight: bold;
+  color: #2b2b5f;
+  margin-left: 12px;
+}
+.earnings-section {
+  margin: 0 auto;
+  margin-top: 32px;
+  max-width: 430px;
+  width: 100%;
+  text-align: center;
+}
+.summary-box {
+  background: #f1f1f1;
+  border-radius: 12px;
+  padding: 25px 0 12px 0;
+  margin: 18px auto;
+  box-shadow: 0 3px 10px rgba(30,40,90,0.05);
+}
+.summary-box h2, .summary-box h3 {
+  margin: 0 0 8px 0;
+  color: #212139;
+}
+.summary-box p {
+  font-size: 24px;
+  color: #2b2b5f;
+  margin: 0 0 8px 0;
+  font-weight: bold;
+}
+.recent-label {
+  margin: 24px 0 12px 0;
+  color: #444;
+  font-size: 18px;
+  text-align: left;
+}
+.transactions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+.transaction-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #fff;
+  padding: 15px 18px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 7px rgba(40,40,80,0.07);
+  font-size: 15px;
+}
+.transaction-item .amount {
+  color: #24a654;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.transaction-item .route {
+  color: #232350;
+  margin-bottom: 2px;
+}
+.transaction-item .date {
+  font-size: 13px;
+  color: #999;
+}
+.transaction-item.empty {
+  text-align: center;
+  color: #bbb;
+  font-size: 16px;
+  box-shadow: none;
+  background: none;
+  padding: 16px;
+}
+@media (max-width: 600px) {
+  .main, .earnings-section { max-width: 97vw; padding: 0 5px; }
+  .summary-box, .transactions-list { width: 100%; }
+}

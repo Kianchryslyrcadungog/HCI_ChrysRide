@@ -1,0 +1,163 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9fb;
+  margin: 0;
+}
+.layout-wrapper {
+  display: flex;
+  height: 100vh;
+}
+.sidebar {
+  width: 240px;
+  background: #2b2b5f;
+  color: white;
+  padding: 20px 0;
+  position: fixed;
+  left: -240px;
+  top: 0;
+  bottom: 0;
+  transition: left 0.3s cubic-bezier(.77,0,.18,1);
+  z-index: 1000;
+}
+.sidebar.open { left: 0; }
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.nav-list li {
+  margin: 20px 0 20px 32px;
+}
+.nav-list a {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+}
+.nav-list img {
+  width: 22px;
+  height: 22px;
+}
+.main {
+  flex: 1;
+  margin-left: 0;
+  padding: 0 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 0 0 0;
+}
+#menu-toggle {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #2b2b5f;
+  cursor: pointer;
+  z-index: 1010;
+}
+.page-title {
+  font-size: 23px;
+  font-weight: bold;
+  color: #2b2b5f;
+  margin-left: 12px;
+}
+.ride-section {
+  margin: 0 auto;
+  margin-top: 40px;
+  max-width: 430px;
+  width: 100%;
+  text-align: center;
+}
+form {
+  background: #f1f1f1;
+  border-radius: 12px;
+  padding: 25px 20px 16px 20px;
+  margin: 18px auto 12px auto;
+  box-shadow: 0 3px 10px rgba(30,40,90,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin-bottom: 4px;
+  color: #212139;
+  font-size: 15px;
+}
+input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  margin-top: 4px;
+  font-size: 15px;
+}
+button[type="submit"] {
+  background: #2b2b5f;
+  color: #fff;
+  padding: 13px 0;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  cursor: pointer;
+  margin-top: 14px;
+  transition: background 0.2s;
+}
+button[type="submit"]:hover {
+  background: #232350;
+}
+#ride-status {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: 500;
+}
+@media (max-width: 600px) {
+  .main, .ride-section { max-width: 97vw; padding: 0 5px; }
+  form { padding: 13px 6px 8px 6px; }
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin-bottom: 14px;
+  color: #22235a;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+select#vehicle-type,
+select#payment-method {
+  margin-top: 7px;
+  border-radius: 9px;
+  border: 1.2px solid #d2d5ef;
+  padding: 11px 13px;
+  font-size: 15px;
+  background: #f8f9fb;
+  color: #232350;
+  outline: none;
+  transition: border 0.18s;
+  box-shadow: 0 1px 4px rgba(44,55,93,0.07);
+  width: 100%;
+  max-width: 340px;
+}
+
+select#vehicle-type:focus,
+select#payment-method:focus {
+  border: 1.5px solid #2b2b5f;
+  background: #fff;
+}
+
+select#vehicle-type option,
+select#payment-method option {
+  color: #232350;
+}

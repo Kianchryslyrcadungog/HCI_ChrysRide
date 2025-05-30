@@ -1,0 +1,111 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  width: 340px;
+  padding: 24px;
+}
+
+/* Top label */
+.role-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2b2b5f;
+  margin-bottom: 10px;
+}
+
+/* Logo and title */
+.logo-box {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 130px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* Form styling */
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form label {
+  font-size: 13px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.login-form input {
+  padding: 10px;
+  border: none;
+  border-bottom: 1px solid #999;
+  margin-bottom: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+/* Checkbox + Forgot */
+.form-extras {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin: 10px 0 18px;
+}
+
+.forgot-link {
+  color: #2b2b5f;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* Login button */
+.btn {
+  padding: 12px;
+  background-color: #2b2b5f;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.btn:hover {
+  background-color: #1f1f47;
+}
+
+/* Sign up line */
+.signup-redirect {
+  text-align: center;
+  font-size: 12px;
+}
+
+.signup-redirect a {
+  color: #2b2b5f;
+  font-weight: 600;
+  text-decoration: none;
+}

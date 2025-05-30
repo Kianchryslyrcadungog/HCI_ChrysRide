@@ -1,0 +1,26 @@
+<!-- role-select.html (HTML only, see script below) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Choose Your Role</title>
+  <link rel="stylesheet" href="Css/role-select.css">
+</head>
+<body>
+  <img src="welcome-image/logo.png" alt="App Logo" class="logo">
+  <h1>Choose your role</h1>
+  <button class="role-btn driver" onclick="goToDriver()">Driver</button>
+  <button class="role-btn passenger" onclick="goToPassenger()">Passenger</button>
+
+
+  <script>
+    function goToDriver() {
+      window.location.href = "driver-login.html"; // Link to driver sign in page
+    }
+    function goToPassenger() {
+      window.location.href = "passenger-login.html"; // Link to passenger sign in page
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profile - Chrys Ride</title>
+  <link rel="stylesheet" href="css/passenger-profile.css" />
+  <!-- Cropper.js CSS -->
+  <link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+  <!-- Cropper.js JS -->
+  <script src="https://unpkg.com/cropperjs"></script>
+</head>
+<body>
+  <div class="layout-wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <ul class="nav-list">
+    <li><a href="home-passenger.html"><img src="home-menu-image/home.png" alt="Home"> Home</a></li>
+    <li><a href="passenger-profile.html"><img src="home-menu-image/account.png" alt="Profile"> Profile</a></li>
+    <li><a href="ride-menu.html"><img src="home-menu-image/booking.png"> My Rides</a></li>
+    <li><a href="ride-setup.html"><img src="home-menu-image/booking.png"> Book a Ride</a></li>
+    <li><a href="passenger-setting.html"><img src="home-menu-image/setting.png"> Settings</a></li>
+      </ul>
+    </nav>
+    <!-- Main -->
+    <div class="main">
+      <header>
+        <button id="menu-toggle">☰</button>
+        <span class="page-title">Profile</span>
+      </header>
+      <div class="profile-section">
+        <div class="profile-picture-wrapper">
+          <img id="profile-picture" src="profile-image/profile.png" alt="Profile Picture" />
+          <div class="status-dot"></div>
+        </div>
+        <h3 id="full-name">Your Name</h3>
+        <div class="info-box">
+          <img src="profile-image/phone.png" alt="Phone Icon">
+          <div>
+            <p class="label">Phone Number</p>
+            <p id="phone-number">---------</p>
+          </div>
+        </div>
+        <div class="info-box">
+          <img src="profile-image/email.png" alt="Email Icon">
+          <div>
+            <p class="label">Email Address</p>
+            <p id="email">---------</p>
+          </div>
+        </div>
+        <button class="edit-button" id="edit-btn">Edit Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close-modal" id="close-modal">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="edit-profile-form" autocomplete="off">
+        <label>
+          Phone Number:
+          <input type="text" id="edit-phone" required>
+        </label>
+        <label>
+          Profile Picture:
+          <input type="file" id="edit-image" accept="image/png,image/jpeg,image/jpg,image/gif">
+        </label>
+        <div id="edit-error" style="color: red; margin: 10px 0 0 0;"></div>
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Cropper Modal -->
+  <div id="cropper-modal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:420px;">
+      <span class="close-modal" id="close-cropper">&times;</span>
+      <h2>Crop Profile Photo</h2>
+      <div class="cropper-container">
+        <div class="cropper-circle-mask"></div>
+        <img id="cropper-image" style="max-width:100%;max-height:350px;display:block;margin:auto;" />
+      </div>
+      <button id="crop-image-btn" style="margin-top:20px;width:100%;">Crop and Save</button>
+    </div>
+  </div>
+
+  <script>
+    // SIDEBAR LOGIC
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("menu-toggle");
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    // Modal logic
+    const editBtn = document.getElementById("edit-btn");
+    const editModal = document.getElementById("edit-modal");
+    const closeModal = document.getElementById("close-modal");
+    const editForm = document.getElementById("edit-profile-form");
+    const imageInput = document.getElementById("edit-image");
+    const editError = document.getElementById("edit-error");
+
+    editBtn.onclick = () => {
+      editModal.style.display = "flex";
+      editError.textContent = "";
+    };
+    closeModal.onclick = () => { editModal.style.display = "none"; };
+    window.onclick = (e) => {
+      if (e.target === editModal) editModal.style.display = "none";
+      if (e.target === cropperModal) cropperModal.style.display = "none";
+    };
+
+    const supabase = window.supabase.createClient(
+      'https://klasvndqmhaioyzyedpg.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+    );
+
+    let userId = null;
+
+    // Fetch and display profile
+    document.addEventListener("DOMContentLoaded", async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        userId = user.id;
+        const { data: profile } = await supabase
+          .from("users")
+          .select("first_name, last_name, email, phone_number, profile_picture")
+          .eq("supabase_uid", user.id)
+          .single();
+        if (profile) {
+          document.getElementById("full-name").textContent = `${profile.first_name} ${profile.last_name}`;
+          document.getElementById("phone-number").textContent = profile.phone_number || "";
+          document.getElementById("email").textContent = profile.email || "";
+          if (profile.profile_picture) {
+            document.getElementById("profile-picture").src = profile.profile_picture;
+          }
+          document.getElementById("edit-phone").value = profile.phone_number || "";
+        }
+      }
+    });
+
+    // --- Cropper Integration ---
+    let cropper;
+    const cropperModal = document.getElementById('cropper-modal');
+    const cropperImage = document.getElementById('cropper-image');
+    const closeCropper = document.getElementById('close-cropper');
+    const cropBtn = document.getElementById('crop-image-btn');
+    let croppedBlob = null;
+
+    // 1. When user selects image
+    imageInput.onchange = function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        cropperImage.src = event.target.result;
+        cropperModal.style.display = "flex";
+        // Destroy old cropper if exists
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(cropperImage, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 1,
+          responsive: true,
+          movable: true,
+          zoomable: true,
+          cropBoxResizable: true,
+          cropBoxMovable: true,
+          minCropBoxWidth: 256,
+          minCropBoxHeight: 256,
+        });
+      };
+      reader.readAsDataURL(file);
+      croppedBlob = null;
+    };
+
+    // 2. Handle cropping
+    cropBtn.onclick = function () {
+      cropper.getCroppedCanvas({ width: 256, height: 256 }).toBlob((blob) => {
+        croppedBlob = blob;
+        cropperModal.style.display = "none";
+      }, "image/png");
+    };
+
+    // 3. Close cropper
+    closeCropper.onclick = function () {
+      cropperModal.style.display = "none";
+    };
+
+    // --- End Cropper Integration ---
+
+    // Handle edit form submit (with image upload)
+    editForm.onsubmit = async (e) => {
+      e.preventDefault();
+      editError.textContent = "";
+      const phone_number = document.getElementById("edit-phone").value;
+
+      let profile_picture_url = null;
+      let uploadFile = croppedBlob || imageInput.files[0];
+
+      if (uploadFile) {
+        if (!uploadFile.type.startsWith("image/")) {
+          editError.textContent = "Only image files are allowed.";
+          return;
+        }
+        const fileExt = "png";
+        const filePath = `${userId}/profile.${fileExt}`;
+        // Try upload
+        const { error: uploadError } = await supabase.storage
+          .from('userprofile')
+          .upload(filePath, uploadFile, { upsert: true });
+        if (uploadError) {
+          editError.textContent = "Failed to upload image.";
+          return;
+        }
+        // Get public URL
+        const { data: urlData } = supabase.storage.from('userprofile').getPublicUrl(filePath);
+        profile_picture_url = urlData.publicUrl;
+      }
+
+      // Update user profile in Supabase
+      const updateObj = { phone_number };
+      if (profile_picture_url) updateObj.profile_picture = profile_picture_url;
+
+      const { error } = await supabase
+        .from("users")
+        .update(updateObj)
+        .eq("supabase_uid", userId);
+
+      if (!error) {
+        editModal.style.display = "none";
+        location.reload();
+      } else {
+        editError.textContent = "Failed to update profile.";
+      }
+    };
+  </script>
+</body>
+</html>

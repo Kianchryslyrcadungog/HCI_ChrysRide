@@ -1,0 +1,238 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f7f8fa;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.layout-wrapper {
+  display: flex;
+  width: 100vw;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: #2b2b5f;
+  color: white;
+  padding: 5px 0;
+  position: fixed;
+  left: -240px;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  z-index: 20;
+  transition: left 0.3s ease;
+  box-shadow: 2px 0 12px rgba(20,20,40,0.04);
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0 0 0 16px;
+  margin: 0;
+}
+
+.nav-list li {
+  margin: 24px 0;
+}
+
+.nav-list a {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.nav-list img {
+  width: 24px;
+  height: 24px;
+}
+
+.main {
+  flex: 1;
+  margin-left: 0;
+  padding: 0 18px;
+  transition: margin-left 0.3s;
+}
+
+.sidebar.open ~ .main {
+  margin-left: 240px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 6px 6px 6px;
+  min-height: 56px;
+  background: none;
+}
+
+.menu-btn {
+  background: #2b2b5f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 24px;
+  padding: 7px 16px 7px 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.menu-btn:active,
+.menu-btn:hover {
+  background: #232350;
+}
+
+.header-spacer {
+  flex: 1;
+}
+
+.logout-btn {
+  background: #2b2b5f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 7px 22px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logout-btn:active,
+.logout-btn:hover {
+  background: #232350;
+}
+
+.logo {
+  width: 68px;
+  display: block;
+  margin: 20px auto 8px auto;
+}
+
+.welcome-header {
+  text-align: center;
+  margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.welcome-header h1 {
+  font-size: 32px;
+  color: #2b2b5f;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+#user-greeting {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  margin-top: 4px;
+}
+
+/* Responsive for phone screens */
+@media (max-width: 650px) {
+  .main {
+    padding: 0 2vw;
+  }
+  .sidebar {
+    width: 76vw;
+    min-width: 170px;
+    left: -80vw;
+    padding-left: 0;
+  }
+  .sidebar.open {
+    left: 0;
+  }
+  .sidebar.open ~ .main {
+    margin-left: 76vw;
+  }
+  .logo {
+    width: 55px;
+  }
+  .app-header {
+    padding: 12px 3vw 0 3vw;
+  }
+  .nav-list a {
+    font-size: 16px;
+    gap: 10px;
+  }
+}
+
+
+.rides-section {
+  max-width: 500px;
+  margin: 40px auto 0 auto;
+  background: #f6f8fa;
+  border-radius: 16px;
+  box-shadow: 0 3px 14px rgba(36, 50, 97, 0.11);
+  padding: 28px 26px 20px 26px;
+}
+
+.rides-section h2 {
+  margin-top: 0;
+  color: #2b2b5f;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+#available-rides-list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0 0;
+}
+
+#available-rides-list li {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(44,55,93,0.05);
+  margin-bottom: 20px;
+  padding: 18px 18px 12px 18px;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.15s;
+}
+
+#available-rides-list li:hover {
+  box-shadow: 0 4px 18px rgba(44,55,93,0.11);
+}
+
+#available-rides-list b {
+  color: #232350;
+  font-size: 1.1rem;
+}
+
+#available-rides-list small {
+  color: #888aa6;
+  font-size: 0.92rem;
+}
+
+#available-rides-list button {
+  margin-top: 8px;
+  align-self: flex-end;
+  background: #2b2b5f;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+#available-rides-list button:hover {
+  background: #24244c;
+}

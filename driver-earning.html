@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Earnings - Chrys Ride</title>
+  <link rel="stylesheet" href="css/driver-earning.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div class="layout-wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <ul class="nav-list">
+        <li><a href="home-driver.html"><img src="home-menu-image/home.png"> Home</a></li>
+        <li><a href="driver-profile.html"><img src="home-menu-image/account.png"> Profile</a></li>
+        <li><a href="Booking-driver.html"><img src="home-menu-image/booking.png"> My Booking</a></li>
+        <li><a href="driver-earning.html"><img src="home-menu-image/salary.png"> Earnings</a></li>
+        <li><a href="driver-setting.html"><img src="home-menu-image/setting.png"> Settings</a></li>
+      </ul>
+    </nav>
+    <!-- Main -->
+    <div class="main">
+      <header>
+        <button id="menu-toggle">☰</button>
+        <span class="page-title">Earnings</span>
+      </header>
+      <div class="earnings-section">
+        <div class="summary-box">
+          <h2>Total Earnings</h2>
+          <p id="total-earnings">₱0.00</p>
+        </div>
+        <div class="summary-box">
+          <h3>This Month</h3>
+          <p id="monthly-earnings">₱0.00</p>
+        </div>
+        <h3 class="recent-label">Recent Transactions</h3>
+        <ul class="transactions-list" id="transactions-list">
+          <li class="transaction-item empty">No transactions yet.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+  <script>
+    // SIDEBAR LOGIC
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("menu-toggle");
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    // SUPABASE CONNECTION
+    const supabase = window.supabase.createClient(
+      'https://klasvndqmhaioyzyedpg.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+    );
+
+    // ON LOAD: Fetch and display earnings
+    document.addEventListener("DOMContentLoaded", async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Fetch completed rides for this driver (replace 'driver_id' with your column name)
+      const { data: rides, error } = await supabase
+        .from("rides") // your rides table
+        .select("id, pickup, destination, fare, completed_at")
+        .eq("driver_id", user.id)
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false });
+
+      let total = 0, monthTotal = 0, transactionItems = '';
+      let now = new Date();
+      let thisMonth = now.getMonth();
+      let thisYear = now.getFullYear();
+
+      if (rides && rides.length > 0) {
+        rides.forEach(ride => {
+          total += ride.fare || 0;
+          let rideDate = new Date(ride.completed_at);
+          if (rideDate.getMonth() === thisMonth && rideDate.getFullYear() === thisYear) {
+            monthTotal += ride.fare || 0;
+          }
+          transactionItems += `
+            <li class="transaction-item">
+              <span class="amount">₱${ride.fare.toFixed(2)}</span>
+              <span class="route">${ride.pickup} → ${ride.destination}</span>
+              <span class="date">${rideDate.toLocaleDateString()} ${rideDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </li>
+          `;
+        });
+      } else {
+        transactionItems = `<li class="transaction-item empty">No transactions yet.</li>`;
+      }
+
+      document.getElementById("total-earnings").textContent = `₱${total.toFixed(2)}`;
+      document.getElementById("monthly-earnings").textContent = `₱${monthTotal.toFixed(2)}`;
+      document.getElementById("transactions-list").innerHTML = transactionItems;
+    });
+  </script>
+</body>
+</html>

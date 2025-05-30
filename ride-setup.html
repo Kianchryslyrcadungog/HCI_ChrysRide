@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book a Ride - Chrys Ride</title>
+  <link rel="stylesheet" href="css/ride-setup.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div class="layout-wrapper">
+    <!-- Sidebar (your sidebar code goes here) -->
+    <nav id="sidebar" class="sidebar">
+      <ul class="nav-list">
+        <li><a href="home-passenger.html"><img src="home-menu-image/home.png"> Home</a></li>
+        <li><a href="passenger-profile.html"><img src="home-menu-image/account.png"> Profile</a></li>
+        <li><a href="ride-menu.html"><img src="home-menu-image/booking.png"> My Rides</a></li>
+        <li><a href="ride-setup.html"><img src="home-menu-image/booking.png"> Book a Ride</a></li>
+        <li><a href="passenger-setting.html"><img src="home-menu-image/setting.png"> Settings</a></li>
+      </ul>
+    </nav>
+    <!-- Main Content -->
+    <div class="main">
+      <header>
+        <button id="menu-toggle">☰</button>
+        <span class="page-title">Book a Ride</span>
+      </header>
+      <form id="ride-form">
+  <label>
+    Pickup Location:
+    <input type="text" id="pickup" required placeholder="Enter pickup point">
+  </label>
+  <label>
+    Destination:
+    <input type="text" id="destination" required placeholder="Enter destination">
+  </label>
+  <label>
+    Vehicle Type:
+    <select id="vehicle-type" required>
+      <option value="">Select vehicle type</option>
+      <option value="Van">Van</option>
+      <option value="Motorcycle">Motorcycle</option>
+      <option value="Tricycle">Tricycle</option>
+      <option value="Jeepney">Jeepney</option>
+      <option value="Bus">Bus</option>
+    </select>
+  </label>
+  <label>
+    Payment Method:
+    <select id="payment-method" required>
+      <option value="">Select payment method</option>
+      <option value="cash">Cash</option>
+      <option value="card">Card</option>
+      <option value="gcash">GCash</option>
+    </select>
+  </label>
+  <button type="submit">Book Ride</button>
+</form>
+
+
+  
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+  <script>
+    // Sidebar logic (drawer)
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("menu-toggle");
+    
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    // Supabase setup (make sure you use YOUR project keys here)
+    const supabase = window.supabase.createClient(
+      'https://klasvndqmhaioyzyedpg.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+    );
+
+   document.getElementById("ride-form").onsubmit = async function(e) {
+  e.preventDefault();
+  const statusDiv = document.getElementById("ride-status");
+  statusDiv.textContent = "";
+  const pickup = document.getElementById("pickup").value;
+  const dropoff = document.getElementById("destination").value;
+  const vehicleType = document.getElementById("vehicle-type").value;
+  const paymentMethod = document.getElementById("payment-method").value;
+
+  // 1. Get logged-in user
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    statusDiv.textContent = "You must be logged in to book a ride.";
+    statusDiv.style.color = "red";
+    return;
+  }
+
+  // 2. Get user_id from users table
+  const { data: userData, error: userError } = await supabase
+    .from("users")
+    .select("user_id")
+    .eq("supabase_uid", user.id)
+    .single();
+
+  if (userError || !userData) {
+    statusDiv.textContent = "User profile not found. Please re-login or contact support.";
+    statusDiv.style.color = "red";
+    return;
+  }
+
+  const passenger_id = userData.user_id;
+
+  // 3. Insert ride including vehicleType and paymentMethod
+  const { error } = await supabase
+    .from("rides")
+    .insert([{
+      passenger_id: passenger_id,
+      pickup: pickup,
+      dropoff: dropoff,
+      vehicle_type: vehicleType,
+      payment_method: paymentMethod, // <-- added!
+      status: "requested"
+    }]);
+
+  if (!error) {
+    statusDiv.textContent = "Ride booked! Waiting for a driver to accept...";
+    statusDiv.style.color = "green";
+    document.getElementById("ride-form").reset();
+    setTimeout(() => {
+      window.location.href = "ride-menu.html";
+    }, 1200);
+  } else {
+    statusDiv.textContent = "Failed to book ride: " + error.message;
+    statusDiv.style.color = "red";
+    console.error(error);
+  }
+}
+  </script>
+</body>
+</html>

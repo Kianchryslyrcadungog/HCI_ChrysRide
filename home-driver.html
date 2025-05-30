@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Passenger Home - Chrys Ride</title>
+  <link rel="stylesheet" href="css/home-menu.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  
+    <nav id="sidebar" class="sidebar">
+      <ul class="nav-list">
+        <li><a href="home-driver.html"><img src="home-menu-image/home.png"> Home</a></li>
+        <li><a href="driver-profile.html"><img src="home-menu-image/account.png"> Profile</a></li>
+        <li><a href="Booking-driver.html"><img src="home-menu-image/booking.png"> My Booking</a></li>
+        <li><a href="driver-earning.html"><img src="home-menu-image/salary.png"> Earnings</a></li>
+        <li><a href="driver-setting.html"><img src="home-menu-image/setting.png"> Settings</a></li>
+      </ul>
+    </nav>
+
+<div class="layout-wrapper">
+  <!-- Main -->
+  <div class="main">
+    <header class="app-header">
+      <button id="menu-toggle" class="menu-btn">☰</button>
+      <span class="header-spacer"></span>
+      <button id="logout" class="logout-btn">Logout</button>
+    </header>
+
+    <div class="welcome-header">
+      <img src="home-menu-image/logo.png" class="logo" alt="Logo">
+      <h1>Welcome to <span>Chrys Ride</span></h1>
+      <h2 id="user-greeting">Welcome back!</h2>
+    </div>
+    <div class="rides-section">
+  <h2>Rides Waiting for Driver</h2>
+  <ul id="available-rides-list"></ul>
+</div>
+
+
+  </div>
+</div>
+
+<script>
+  // Supabase connection
+  const supabase = window.supabase.createClient(
+    'https://klasvndqmhaioyzyedpg.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+  );
+
+  const sidebar = document.getElementById("sidebar");
+const toggle = document.getElementById("menu-toggle");
+toggle.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+});
+
+
+  // Fetch current driver user_id
+  async function getDriverId() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { data: driver, error } = await supabase
+      .from("users")
+      .select("user_id")
+      .eq("supabase_uid", user.id)
+      .eq("role", "driver")
+      .single();
+    return driver ? driver.user_id : null;
+  }
+
+  // Fetch available rides (waiting for driver)
+  async function loadAvailableRides() {
+    const ridesList = document.getElementById('available-rides-list');
+    ridesList.innerHTML = "<li>Loading...</li>";
+
+    const { data: rides, error } = await supabase
+      .from("rides")
+      .select("ride_id, pickup, dropoff, created_at")
+      .is("driver_id", null)
+      .eq("status", "requested")
+      .order("created_at", { ascending: true });
+
+    if (!rides || !rides.length) {
+      ridesList.innerHTML = "<li>No rides available.</li>";
+      return;
+    }
+    ridesList.innerHTML = rides.map(r =>
+      `<li>
+        <b>${r.pickup} → ${r.dropoff}</b>
+        <br><small>Booked: ${new Date(r.created_at).toLocaleString()}</small>
+        <br>
+        <button onclick="acceptRide('${r.ride_id}')">Accept Ride</button>
+      </li>`
+    ).join('');
+  }
+
+  // Accept Ride logic
+  async function acceptRide(rideId) {
+    const driverId = await getDriverId();
+    if (!driverId) {
+      alert("Driver not logged in.");
+      return;
+    }
+    const { error } = await supabase
+      .from("rides")
+      .update({
+        driver_id: driverId,
+        status: "accepted"
+      })
+      .eq("ride_id", rideId);
+
+    if (!error) {
+      alert("Ride accepted!");
+      loadAvailableRides();
+    } else {
+      alert("Failed to accept ride: " + error.message);
+    }
+  }
+
+  // Make acceptRide available globally (for inline button)
+  window.acceptRide = acceptRide;
+
+  // Load rides after DOM loads
+  document.addEventListener("DOMContentLoaded", loadAvailableRides);
+</script>
+
+</body>
+</html>

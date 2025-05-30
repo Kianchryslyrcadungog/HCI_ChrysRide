@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chrys Ride - Main Layout</title>
+  <!-- Swap the CSS file to match the page, if needed -->
+  <link rel="stylesheet" href="css/main.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+<div class="app-container">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <button class="menu-toggle" id="close-sidebar">&#10005;</button>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="home-driver.html"><img src="home-menu-image/home.png" alt="Home"> Home</a></li>
+      <li><a href="driver-profile.html"><img src="home-menu-image/account.png" alt="Profile"> Profile</a></li>
+      <li><a href="my-booking.html"><img src="home-menu-image/booking.png" alt="My Booking"> My Booking</a></li>
+      <li><a href="earnings.html"><img src="home-menu-image/salary.png" alt="Earnings"> Earnings</a></li>
+      <li><a href="driver-setting.html"><img src="home-menu-image/setting.png" alt="Settings"> Settings</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <a href="#" id="logout-link">Logout</a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT (change this per page) -->
+
+<div style="max-width:480px; margin:32px auto; background:#fff; padding:32px; border-radius:12px; box-shadow:0 2px 10px #0001;">
+  <div style="max-width:480px; margin:32px auto; background:#fff; padding:32px; border-radius:12px; box-shadow:0 2px 10px #0001;">
+  <img src="home-menu-image/logo.png" alt="Chrys Ride Logo" style="display:block; margin:0 auto 18px auto; width:68px;">
+  <h2 style="text-align:center;">Welcome to Chrys Ride!</h2>
+  <p class="intro" style="margin-bottom:20px; text-align:center; font-size:1.06rem;">
+    <b>Chrys Ride</b> is your trusted companion for safe, convenient, and reliable ride sharing. 
+    Whether you’re a driver or a passenger, our mission is to make every journey smooth, secure, and enjoyable.
+    <br><br>
+    Book rides, manage your trips, track your earnings, and keep your profile up to date—all in one easy-to-use platform.
+  </p>
+  <ul style="margin-bottom:18px;">
+    <li>Navigate using the sidebar to access your Home, Profile, Bookings, Earnings, and Settings.</li>
+    <li>All features are built for both drivers and passengers.</li>
+    <li>Start your Chrys Ride experience now!</li>
+  </ul>
+  <button class="next-btn" id="next-btn">Next</button>
+</div>
+
+<script src="responsive.js"></script>
+<script>
+  // Next button logic
+  document.getElementById('next-btn').onclick = function() {
+    window.location.href = "role-select.html";
+  };
+</script>
+
+<!-- Responsive sidebar JS, works on all pages -->
+<script src="responsive.js"></script>
+<script>
+  // Optional: You can put page-specific JavaScript here.
+  // Example: Highlighting main page (you can do this globally in responsive.js too)
+</script>
+</body>
+</html>

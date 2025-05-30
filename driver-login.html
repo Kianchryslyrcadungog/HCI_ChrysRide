@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Driver Login - Chrys Ride</title>
+  <link rel="stylesheet" href="css/driver-login.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+  <div class="login-container">
+    <p class="role-label">Driver</p>
+
+    <div class="logo-box">
+      <img src="home-menu-image/logo.png" alt="Chrys Ride Logo" class="logo">
+      <h1 class="title">Chrys Ride</h1>
+    </div>
+
+    <form class="login-form" id="login-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" class="btn">Log In</button>
+    </form>
+
+    <p id="status-message"></p>
+    <p class="signup-redirect">
+      Don’t have an account? <a href="driver-signup.html">Sign Up</a>
+    </p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const supabase = window.supabase.createClient(
+        'https://klasvndqmhaioyzyedpg.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+      );
+
+      const form = document.getElementById("login-form");
+      const status = document.getElementById("status-message");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          status.textContent = "❌ Login failed: " + error.message;
+          status.style.color = "red";
+          return;
+        }
+
+        const userId = data.user.id;
+
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("first_name, last_name, role")
+          .eq("supabase_uid", userId)
+          .single();
+
+        if (profileError || !profile) {
+          status.textContent = "✅ Logged in, but profile not found.";
+          status.style.color = "orange";
+        } else {
+          status.textContent = `✅ Welcome ${profile.first_name} ${profile.last_name}! Redirecting...`;
+          status.style.color = "green";
+
+          setTimeout(() => {
+            window.location.href = "driver-home.html"; // or your driver main page
+            if (profileError || !profile) {
+  status.textContent = "✅ Logged in, but profile not found.";
+  status.style.color = "orange";
+} else if (!profile.vehicle_type) {
+  status.textContent = `✅ Login successful! Please select your vehicle type.`;
+  status.style.color = "green";
+  setTimeout(() => {
+    window.location.href = "home-driver.html";
+  }, 1000);
+} else {
+  status.textContent = `✅ Welcome ${profile.first_name} ${profile.last_name}! Redirecting...`;
+  status.style.color = "green";
+  setTimeout(() => {
+    window.location.href = "driver-home.html";
+  }, 1000);
+}
+window.location.href = "home-driver.html";
+
+
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

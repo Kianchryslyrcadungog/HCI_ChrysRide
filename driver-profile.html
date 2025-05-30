@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Driver Profile - Chrys Ride</title>
+  <link rel="stylesheet" href="css/driver-profile.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div class="layout-wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <ul class="nav-list">
+        <li><a href="home-driver.html"><img src="home-menu-image/home.png"> Home</a></li>
+        <li><a href="driver-profile.html"><img src="home-menu-image/account.png"> Profile</a></li>
+        <li><a href="Booking-driver.html"><img src="home-menu-image/booking.png"> My Booking</a></li>
+        <li><a href="driver-earning.html"><img src="home-menu-image/salary.png"> Earnings</a></li>
+        <li><a href="driver-setting.html"><img src="home-menu-image/setting.png"> Settings</a></li>
+      </ul>
+    </nav>
+    <!-- Main -->
+    <div class="main">
+      <header>
+        <button id="menu-toggle">☰</button>
+        <span class="page-title">Profile</span>
+      </header>
+      <div class="profile-section">
+        <div class="profile-picture-wrapper">
+          <img id="profile-picture" src="profile-image/profile.png" alt="Profile Picture" />
+          <div class="status-dot"></div>
+        </div>
+        <h3 id="full-name">Your Name</h3>
+        <div class="info-box">
+          <img src="profile-image/phone.png" alt="Phone Icon">
+          <div>
+            <p class="label">Phone Number</p>
+            <p id="phone-number">---------</p>
+          </div>
+        </div>
+        <div class="info-box">
+          <img src="profile-image/email.png" alt="Email Icon">
+          <div>
+            <p class="label">Email Address</p>
+            <p id="email">---------</p>
+          </div>
+        </div>
+        <button class="edit-button" id="edit-btn">Edit Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close-modal" id="close-modal">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="edit-profile-form">
+        <label>
+          First Name:
+          <input type="text" id="edit-first-name" required>
+        </label>
+        <label>
+          Last Name:
+          <input type="text" id="edit-last-name" required>
+        </label>
+        <label>
+          Phone Number:
+          <input type="text" id="edit-phone" required>
+        </label>
+        <label>
+          Profile Picture:
+          <input type="file" id="edit-image" accept="image/*">
+        </label>
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // SIDEBAR LOGIC
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("menu-toggle");
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    // Modal logic
+    const editBtn = document.getElementById("edit-btn");
+    const editModal = document.getElementById("edit-modal");
+    const closeModal = document.getElementById("close-modal");
+    const editForm = document.getElementById("edit-profile-form");
+    const imageInput = document.getElementById("edit-image");
+
+    editBtn.onclick = () => editModal.style.display = "flex";
+    closeModal.onclick = () => editModal.style.display = "none";
+    window.onclick = (e) => { if (e.target === editModal) editModal.style.display = "none"; }
+
+    const supabase = window.supabase.createClient(
+      'https://klasvndqmhaioyzyedpg.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+    );
+
+    // Fetch and display profile
+    document.addEventListener("DOMContentLoaded", async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("users")
+          .select("first_name, last_name, email, phone_number, profile_picture")
+          .eq("supabase_uid", user.id)
+          .single();
+        if (profile) {
+          document.getElementById("full-name").textContent = `${profile.first_name} ${profile.last_name}`;
+          document.getElementById("phone-number").textContent = profile.phone_number || "";
+          document.getElementById("email").textContent = profile.email || "";
+          if (profile.profile_picture) {
+            document.getElementById("profile-picture").src = profile.profile_picture;
+          }
+          // Fill edit form fields
+          document.getElementById("edit-first-name").value = profile.first_name || "";
+          document.getElementById("edit-last-name").value = profile.last_name || "";
+          document.getElementById("edit-phone").value = profile.phone_number || "";
+        }
+      }
+    });
+
+    // Handle edit form submit (with image upload)
+    editForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const first_name = document.getElementById("edit-first-name").value;
+      const last_name = document.getElementById("edit-last-name").value;
+      const phone_number = document.getElementById("edit-phone").value;
+
+      // Handle image upload if there's a new image
+      let profile_picture_url = null;
+      const file = imageInput.files[0];
+      if (file) {
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${user.id}/profile.${fileExt}`;
+        // Upload to Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from('profile-pictures')
+          .upload(filePath, file, { upsert: true });
+        if (!uploadError) {
+          const { data } = supabase.storage.from('profile-pictures').getPublicUrl(filePath);
+          profile_picture_url = data.publicUrl;
+        }
+      }
+
+      // Update user profile in Supabase
+      const updateObj = {
+        first_name, last_name, phone_number
+      };
+      if (profile_picture_url) updateObj.profile_picture = profile_picture_url;
+
+      const { error } = await supabase
+        .from("users")
+        .update(updateObj)
+        .eq("supabase_uid", user.id);
+
+      if (!error) {
+        alert("Profile updated!");
+        location.reload();
+      } else {
+        alert("Failed to update profile.");
+      }
+    };
+  </script>
+</body>
+</html>

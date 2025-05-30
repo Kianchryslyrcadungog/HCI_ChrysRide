@@ -1,0 +1,112 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome-container {
+  width: 320px;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Stack label and logo correctly */
+.header-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  background-color: #2b2b5f;
+  color: #fff;
+  border-radius: 999px;
+  padding: 6px 18px;
+  font-size: 13px;
+}
+
+.logo {
+  width: 170px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Title */
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Greeting */
+.greeting {
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+/* Tagline */
+.tagline {
+  font-size: 11px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.button {
+  display: block;
+  width: 100%;
+  background-color: #2b2b5f;
+  color: white;
+  text-decoration: none;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.button:hover {
+  background-color: #1f1f47;
+}
+
+/* Social */
+.social-label {
+  font-size: 12px;
+  color: #555;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  background-color: #eee;
+  color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}

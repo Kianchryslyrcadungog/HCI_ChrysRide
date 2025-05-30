@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Finding Driver - Chrys Ride</title>
+  <link rel="stylesheet" href="css/ride-pairing.css" />
+</head>
+<body>
+  <div class="layout-wrapper">
+    <!-- Sidebar (drawer) -->
+    <nav id="sidebar" class="sidebar hidden">
+      <ul class="nav-list">
+        <li><a href="home-menu.html"><img src="home-menu-image/home.png"> Home</a></li>
+        <li><a href="passenger-profile.html"><img src="home-menu-image/account.png"> Profile</a></li>
+        <li><a href="ride-menu.html"><img src="home-menu-image/booking.png"> My Rides</a></li>
+        <li><a href="ride-setup.html"><img src="home-menu-image/booking.png"> Book a Ride</a></li>
+        <li><a href="passenger-setting.html"><img src="home-menu-image/setting.png"> Settings</a></li>
+      </ul>
+    </nav>
+
+    <div class="main">
+      <header>
+        <button id="menu-toggle">☰</button>
+        <h2>Pairing...</h2>
+      </header>
+      <div class="pairing-content">
+        <div class="loader"></div>
+        <p>Searching for a driver nearby...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar drawer toggle
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+      document.getElementById("sidebar").classList.toggle("open");
+    });
+
+    // After delay, redirect to status page with ride_id
+    const params = new URLSearchParams(window.location.search);
+    const rideId = params.get("ride_id");
+
+    setTimeout(() => {
+      window.location.href = "ride-status.html?ride_id=" + rideId;
+    }, 4000); // 4 seconds for simulation
+  </script>
+</body>
+</html>

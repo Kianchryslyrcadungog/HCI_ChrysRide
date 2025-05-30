@@ -1,0 +1,80 @@
+body {
+  background: #333; /* To match your border background */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vehicle-container {
+  background: #fff;
+  width: 320px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.header {
+  background: #2b2b5f;
+  color: #fff;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.header-title {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.back-arrow {
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.circle-bg {
+  background: #2b2b5f;
+  border-bottom-left-radius: 100% 60px;
+  border-bottom-right-radius: 100% 60px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.vehicle-icon {
+  width: 80px;
+  height: 80px;
+  filter: brightness(0) invert(1);
+}
+
+.vehicle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px 20px 32px 20px;
+}
+
+.vehicle-btn {
+  background: #efefef;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 17px;
+  color: #2b2b5f;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.vehicle-btn:hover {
+  background: #e0e0e0;
+}

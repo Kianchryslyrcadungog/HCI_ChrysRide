@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Passenger Sign Up - Chrys Ride</title>
+  <link rel="stylesheet" href="css/passenger-signup.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+  <div class="signup-container">
+    <!-- Logo + Title -->
+    <div class="logo-header">
+      <img src="welcome-image/logo.png" alt="Logo" class="logo">
+      <h1>Welcome to <span>Chrys Ride</span></h1>
+    </div>
+
+    <h2 class="subtitle">Create Passenger Account</h2>
+
+    <!-- Sign Up Form -->
+    <form id="signup-form">
+      <div class="name-fields">
+        <input type="text" id="firstname" placeholder="First Name" required>
+        <input type="text" id="lastname" placeholder="Last Name" required>
+      </div>
+
+      <input type="email" id="email" placeholder="E-mail" required>
+      <input type="password" id="password" placeholder="Password" required>
+
+      <div class="phone-input">
+        <span class="prefix">+63</span>
+        <input type="tel" id="contact" placeholder="9151234567" pattern="\d{10}" required>
+      </div>
+
+      <div class="terms">
+        <input type="checkbox" id="agree" required>
+        <label for="agree">Agree with <a href="#">Terms & Conditions</a></label>
+      </div>
+
+      <button type="submit" class="btn">Sign Up</button>
+    </form>
+
+    <p class="login-link">Already have an account? <a href="passenger-login.html">Log in</a></p>
+    <p id="status-message"></p>
+  </div>
+
+  <!-- ✅ Signup + insert to hosted Supabase -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const supabase = window.supabase.createClient(
+        'https://klasvndqmhaioyzyedpg.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+      );
+
+      const form = document.getElementById("signup-form");
+      const status = document.getElementById("status-message");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const firstname = document.getElementById("firstname").value;
+        const lastname = document.getElementById("lastname").value;
+        const rawContact = document.getElementById("contact").value.trim();
+        const contact = rawContact.startsWith("0") ? rawContact : "0" + rawContact;
+
+        const { data, error } = await supabase.auth.signUp({ email, password });
+
+        if (error) {
+          status.textContent = "❌ Signup failed: " + error.message;
+          status.style.color = "red";
+          return;
+        }
+
+        const supabase_uid = data.user?.id;
+
+        if (!supabase_uid) {
+          status.textContent = "✅ Auth created, but user ID not found.";
+          status.style.color = "orange";
+          return;
+        }
+
+        const { error: dbError } = await supabase
+          .from('users')
+          .insert([{
+            first_name: firstname,
+            last_name: lastname,
+            email: email,
+            role: 'passenger',
+            phone_number: contact,
+            supabase_uid: supabase_uid
+          }]);
+
+        if (dbError) {
+          status.textContent = "✅ Auth created, but DB insert failed: " + dbError.message;
+          status.style.color = "orange";
+        } else {
+          status.textContent = "✅ Account created! You may now log in.";
+          status.style.color = "green";
+          form.reset();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

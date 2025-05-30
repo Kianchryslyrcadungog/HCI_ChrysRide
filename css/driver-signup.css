@@ -1,0 +1,124 @@
+body {
+  background-color: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.signup-container {
+  width: 340px;
+  text-align: center;
+  padding: 20px;
+}
+
+.logo-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.logo {
+  width: 90px;
+  margin-bottom: 10px;
+}
+
+.logo-header h1 {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.logo-header span {
+  font-weight: bold;
+  color: #2b2b5f;
+}
+
+.subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.name-fields {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.name-fields input {
+  flex: 1;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="tel"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  border: none;
+  border-bottom: 1px solid #aaa;
+  outline: none;
+}
+
+.phone-input {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #aaa;
+  margin-bottom: 10px;
+}
+
+.phone-input .prefix {
+  padding: 10px 6px 10px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.phone-input input {
+  border: none;
+  flex: 1;
+  font-size: 14px;
+  outline: none;
+  padding: 10px 0;
+}
+
+.terms {
+  font-size: 12px;
+  text-align: left;
+  margin: 10px 0;
+}
+
+.terms a {
+  color: #2b2b5f;
+  text-decoration: none;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #2b2b5f;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-size: 15px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #1f1f47;
+}
+
+.login-link {
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+.login-link a {
+  font-weight: 600;
+  color: #2b2b5f;
+  text-decoration: none;
+}

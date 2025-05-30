@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Rides - Chrys Ride</title>
+  <link rel="stylesheet" href="css/ride-menu.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div class="layout-wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <ul class="nav-list">
+        <li><a href="home-passenger.html"><img src="home-menu-image/home.png"> Home</a></li>
+        <li><a href="passenger-profile.html"><img src="home-menu-image/account.png"> Profile</a></li>
+        <li><a href="ride-menu.html"><img src="home-menu-image/booking.png"> My Rides</a></li>
+        <li><a href="ride-setup.html"><img src="home-menu-image/booking.png"> Book a Ride</a></li>
+        <li><a href="passenger-setting.html"><img src="home-menu-image/setting.png"> Settings</a></li>
+      </ul>
+    </nav>
+    <!-- Main -->
+    <div class="main">
+      <header>
+        <button id="menu-toggle">☰</button>
+        <span class="page-title">My Rides</span>
+      </header>
+      <div class="bookings-section">
+        <h2>Your Ride Bookings</h2>
+        <div class="filter-tabs">
+          <button class="tab-btn active" data-status="all">All</button>
+          <button class="tab-btn" data-status="pending">Pending</button>
+          <button class="tab-btn" data-status="accepted">Accepted</button>
+          <button class="tab-btn" data-status="completed">Completed</button>
+          <button class="tab-btn" data-status="cancelled">Cancelled</button>
+        </div>
+        <ul class="bookings-list" id="bookings-list">
+          <li class="booking-item empty">No rides found.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+  <script>
+    // SIDEBAR LOGIC
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("menu-toggle");
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    // SUPABASE CONNECTION
+    const supabase = window.supabase.createClient(
+      'https://klasvndqmhaioyzyedpg.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+    );
+
+    let bookings = [];
+    let currentStatus = 'all';
+
+    async function fetchBookings(status) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  // 1. Get user_id from users table
+  const { data: userData, error: userError } = await supabase
+    .from("users")
+    .select("user_id")
+    .eq("supabase_uid", user.id)
+    .single();
+
+  if (userError || !userData) {
+    bookings = [];
+    renderBookings();
+    return;
+  }
+
+  // 2. Fetch rides for this passenger
+  let query = supabase
+    .from("rides")
+    .select("ride_id, pickup, dropoff, created_at, status, driver_id, fare")
+    .eq("passenger_id", userData.user_id)
+    .order("created_at", { ascending: false });
+
+  if (status !== "all") {
+    query = query.eq("status", status);
+  }
+
+  const { data, error } = await query;
+  bookings = data || [];
+  renderBookings();
+}
+
+    function renderBookings() {
+      const list = document.getElementById('bookings-list');
+      if (!bookings.length) {
+        list.innerHTML = `<li class="booking-item empty">No rides found.</li>`;
+        return;
+      }
+      let html = '';
+      bookings.forEach(b => {
+        const dateObj = b.created_at ? new Date(b.created_at) : null;
+        const dateStr = dateObj ? `${dateObj.toLocaleDateString()} ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'N/A';
+        html += `
+          <li class="booking-item">
+            <div class="booking-main">
+              <span class="route">${b.pickup} → ${b.dropoff}</span>
+              <span class="status ${b.status}">${b.status.charAt(0).toUpperCase() + b.status.slice(1)}</span>
+            </div>
+            <div class="booking-meta">
+              <span class="booking-date">Booked: ${dateStr}</span>
+              ${b.fare ? `<span class="booking-fare">Fare: ₱${b.fare}</span>` : ""}
+              ${b.driver_id ? `<span class="booking-driver">Driver ID: ${b.driver_id}</span>` : ""}
+            </div>
+          </li>
+        `;
+      });
+      list.innerHTML = html;
+    }
+
+    // Tab logic
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentStatus = this.dataset.status;
+        fetchBookings(currentStatus);
+      });
+    });
+
+    // Initial fetch
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchBookings(currentStatus);
+    });
+  </script>
+</body>
+</html>

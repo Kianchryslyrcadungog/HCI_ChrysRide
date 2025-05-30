@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Select Vehicle - Chrys Ride</title>
+  <link rel="stylesheet" href="css/vehicle-selection.css" />
+</head>
+<body>
+  <div class="vehicle-container">
+    <div class="header">
+      <span class="back-arrow" onclick="history.back()">&larr;</span>
+      <span class="header-title">Vehicle</span>
+    </div>
+    <div class="circle-bg">
+      <!-- Replace below with your vehicle icon if you have an image -->
+      <img src="driver-image/vehicle-icon.png" alt="Vehicle Icon" class="vehicle-icon"/>
+    </div>
+    <div class="vehicle-list">
+      <button class="vehicle-btn">Van</button>
+      <button class="vehicle-btn">Motorcycle</button>
+      <button class="vehicle-btn">Tricycle</button>
+      <button class="vehicle-btn">Jeepney</button>
+      <button class="vehicle-btn">Bus</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+<script>
+  // Replace with your real values or get from a secure context/session
+  const supabase = window.supabase.createClient(
+    'https://klasvndqmhaioyzyedpg.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+  );
+
+  // Get the current user
+  async function getCurrentUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  }
+
+  document.querySelectorAll('.vehicle-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const vehicleType = e.target.textContent;
+      const user = await getCurrentUser();
+
+      if (!user) {
+        alert('Not logged in.');
+        window.location.href = "driver-login.html";
+        return;
+      }
+
+      // Update user's vehicle_type in Supabase
+      const { error } = await supabase
+        .from('users')
+        .update({ vehicle_type: vehicleType })
+        .eq('supabase_uid', user.id);
+
+      if (error) {
+        alert('Error saving vehicle type: ' + error.message);
+      } else {
+        window.location.href = "driver-home.html";
+      }
+    });
+  });
+</script>
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Driver Sign Up - Chrys Ride</title>
+  <link rel="stylesheet" href="css/driver-signup.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div class="signup-container">
+    <div class="logo-header">
+      <img src="welcome-image/logo.png" alt="Logo" class="logo">
+      <h1>Welcome to <span>Chrys Ride</span></h1>
+    </div>
+
+    <h2 class="subtitle">Create Driver Account</h2>
+
+    <!-- STEP 1: BASIC INFO -->
+    <form id="step1-form">
+      <div class="name-fields">
+        <input type="text" id="firstname" placeholder="First Name" required>
+        <input type="text" id="lastname" placeholder="Last Name" required>
+      </div>
+      <input type="email" id="email" placeholder="E-mail" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <div class="phone-input">
+        <span class="prefix">+63</span>
+        <input type="tel" id="contact" placeholder="9*********" pattern="\d{10}" required>
+      </div>
+      <button type="button" class="btn" id="next-btn">Next</button>
+    </form>
+
+    <!-- STEP 2: VEHICLE INFO -->
+    <form id="step2-form" style="display:none;">
+      <select id="vehicle-type" required>
+        <option value="">Select Vehicle Type</option>
+        <option value="Van">Van</option>
+        <option value="Motorcycle">Motorcycle</option>
+        <option value="Tricycle">Tricycle</option>
+        <option value="Jeepney">Jeepney</option>
+        <option value="Bus">Bus</option>
+      </select>
+      <input type="text" id="plate-number" placeholder="Plate Number" required>
+      <input type="text" id="license-number" placeholder="License Number" required>
+      <input type="text" id="brand" placeholder="Vehicle Brand (e.g., Toyota)" required>
+      <input type="text" id="model" placeholder="Vehicle Model (e.g., HiAce, Mio, Bajaj)" required>
+      <!-- Uncomment and add if your database has these fields:
+      <input type="text" id="year" placeholder="Vehicle Year (e.g., 2022)">
+      <input type="text" id="color" placeholder="Vehicle Color">
+      -->
+      <div class="terms">
+        <input type="checkbox" id="agree" required>
+        <label for="agree">Agree with <a href="#">Terms & Conditions</a></label>
+      </div>
+      <button type="submit" class="btn">Sign Up</button>
+    </form>
+
+    <p class="login-link">Already have an account? <a href="driver-login.html">Log in</a></p>
+    <p id="status-message"></p>
+  </div>
+
+  <script>
+    // Supabase client setup
+    const supabase = window.supabase.createClient(
+      'https://klasvndqmhaioyzyedpg.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYXN2bmRxbWhhaW95enllZHBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzODIwNjIsImV4cCI6MjA2Mzk1ODA2Mn0.IhbTIgHda9LrY7EpbqwKfYjZHRPAIwFcxOxwi1srJ4U'
+    );
+
+    const step1Form = document.getElementById("step1-form");
+    const step2Form = document.getElementById("step2-form");
+    const nextBtn = document.getElementById("next-btn");
+    const status = document.getElementById("status-message");
+
+    // Hold data between steps
+    let step1Data = {};
+
+    nextBtn.addEventListener("click", function() {
+      if (!step1Form.checkValidity()) {
+        step1Form.reportValidity();
+        return;
+      }
+      // Collect step 1 data
+      step1Data = {
+        firstname: document.getElementById("firstname").value.trim(),
+        lastname: document.getElementById("lastname").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value,
+        contact: document.getElementById("contact").value.trim(),
+      };
+      step1Form.style.display = "none";
+      step2Form.style.display = "block";
+      status.textContent = "";
+    });
+
+    step2Form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      // Gather step 2 data
+      const vehicle_type = document.getElementById("vehicle-type").value;
+      const plate_number = document.getElementById("plate-number").value.trim();
+      const license_number = document.getElementById("license-number").value.trim();
+      const brand = document.getElementById("brand").value.trim();
+      const model = document.getElementById("model").value.trim();
+      // Uncomment and add if your table supports:
+      // const year = document.getElementById("year").value.trim();
+      // const color = document.getElementById("color").value.trim();
+      const agree = document.getElementById("agree").checked;
+
+      if (!agree) {
+        status.textContent = "❌ You must agree to the terms and conditions.";
+        status.style.color = "red";
+        return;
+      }
+
+      // 1. Register with Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email: step1Data.email,
+        password: step1Data.password
+      });
+
+      if (error) {
+        status.textContent = "❌ Signup failed: " + error.message;
+        status.style.color = "red";
+        return;
+      }
+
+      const supabase_uid = data.user?.id;
+      if (!supabase_uid) {
+        status.textContent = "✅ Auth created, but user ID not found.";
+        status.style.color = "orange";
+        return;
+      }
+
+      // 2. Insert driver into users table
+      const { error: dbError } = await supabase
+        .from('users')
+        .insert([{
+          first_name: step1Data.firstname,
+          last_name: step1Data.lastname,
+          email: step1Data.email,
+          role: 'driver',
+          phone_number: step1Data.contact.startsWith("0") ? step1Data.contact : "0" + step1Data.contact,
+          supabase_uid: supabase_uid,
+          license_number: license_number // Only if your users table has this column
+        }]);
+
+      if (dbError) {
+        status.textContent = "✅ Auth created, but DB insert failed: " + dbError.message;
+        status.style.color = "orange";
+        return;
+      }
+
+      // 3. Get the user_id from users table
+      const { data: userData, error: userQueryError } = await supabase
+        .from('users')
+        .select('user_id')
+        .eq('supabase_uid', supabase_uid)
+        .single();
+
+      if (userQueryError || !userData) {
+        status.textContent = "✅ Auth created, but could not fetch user_id.";
+        status.style.color = "orange";
+        return;
+      }
+      const user_id = userData.user_id;
+
+      // 4. Insert vehicle info into vehicles table
+      const { error: vehicleInsertError } = await supabase
+        .from('vehicles')
+        .insert([{
+          user_id: user_id,
+          plate_no: plate_number,
+          vehicle_type: vehicle_type,
+          brand: brand,
+          model: model
+          // year: year, color: color, // Uncomment if your DB supports these fields
+        }]);
+
+      if (vehicleInsertError) {
+        status.textContent = "❌ Vehicle registration failed: " + vehicleInsertError.message;
+        status.style.color = "red";
+        return;
+      }
+
+      // All success
+      status.textContent = "✅ Account created! You may now log in.";
+      status.style.color = "green";
+      step2Form.reset();
+      step1Form.reset();
+      setTimeout(() => {
+        window.location.href = "driver-login.html";
+      }, 1200);
+    });
+  </script>
+</body>
+</html>
